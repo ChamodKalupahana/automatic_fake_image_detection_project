@@ -1,0 +1,13 @@
+fake moose, 9.53
+fake lion, 7.84
+
+real zebra, 15.05
+real bird, 31.09
+
+lake, 9.33
+gym, 2.9
+orginal, 0.53
+edit goosefair bright, 7.48
+goosefair bright, 5.84
+goosefair, 3.05
+goosefair day, 3.05
