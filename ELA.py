@@ -29,10 +29,14 @@ def convert_to_ela_image(path, quality):
 
 
 #------------------------------------------------------------------------
-#--------------------- Input image ---------------------
+#--------------------- Fake Image Calculations ---------------------
 #------------------------------------------------------------------------
 
-orginal_image, image_path = load_image('fake moose')
+# fake moose, fake lion, real zebra, real bird
+orginal_image, image_path = load_image('fake lion')
+
+# higher ela brightness means more real
+# same level of ela brightness throughout image means more real
 
 ela_image = np.asarray(convert_to_ela_image(image_path, 90))
 
@@ -44,6 +48,12 @@ print('Resolution = '+ str(width) + 'x' + str(height))
 fakeness = np.sum(ela_image) / (num_of_pixels * 255)
 print('probabilty of fake = {fakeness:.2f} %'.format(fakeness=fakeness * 100)) # in percent
 
+# calculate histrogram
+r, g, b = ela_image[:,:,0], ela_image[:,:,1], ela_image[:,:,2]
+greyscale_ela_image = 0.2989 * r + 0.5870 * g + 0.1140 * b
+greyscale_ela_image = (greyscale_ela_image / np.amax(greyscale_ela_image)).astype(np.float64)
+
+hist_ela, bin_edges_ela = np.histogram(greyscale_ela_image * 256, bins=100, range=(0, 256))
 
 #------------------------------------------------------------------------
 #--------------------- Plotting Infomation ---------------------
@@ -62,7 +72,17 @@ ax[1].set_yticks([])
 ax[0].set_title('Orginal Image')
 ax[1].set_title('ELA Image')
 
-plt.savefig(r'figures\test image.jpeg')
+# plot histrogram
+fig_2, ax_2 = plt.subplots(1)
+
+ax_2.bar(bin_edges_ela[0:-1], hist_ela, align='edge', width=20)
+
+ax_2.set_title('Histrogram of ELA Image')
+ax_2.set_ylabel('Num. of pixels')
+ax_2.set_xlabel('Pixel Brightess')
+
+fig.savefig(r'figures\test image ELA.jpeg')
+fig_2.savefig(r'figures\test image hist ELA.jpeg')
 plt.show()
 
 # measure time taken to execute code (uni interpreter is usually faster than uni_2_1)
