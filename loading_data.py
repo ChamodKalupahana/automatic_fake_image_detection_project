@@ -60,6 +60,10 @@ def load_image(image):
         orginal_image = plt.imread(r'test images\fake lion.jpg')
         image_path = r'test images\fake lion.jpg'
 
+    if image == 'fake lion small':
+        orginal_image = plt.imread(r'test images\fake lion small.jpg')
+        image_path = r'test images\fake lion small.jpg'
+
     if image == 'real zebra':
         orginal_image = plt.imread(r'test images\real zebra.jpg')
         image_path = r'test images\real zebra.jpg'

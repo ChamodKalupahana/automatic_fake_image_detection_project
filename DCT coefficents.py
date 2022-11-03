@@ -8,8 +8,33 @@ from loading_data import load_image
 
 start_time = time.time()
 
-def dct_coefficents(orginal_image):
-    dct_image = dct(dct(orginal_image, axis=0), axis=1)
+def get_blocks(orginal_image, width, height):
+    # define 3x3 blocks
+    block_width = 2
+    block_height = 2
+
+    block_array = np.empty((width, height, block_width, block_width))
+    
+    # loop over the whole image
+    # this step will computationally intense so we loaded in a smaller 106 x 156 image
+    for x in range(width - 1):
+        for y in range(height - 1):
+            new_block_array = orginal_image[x : x + block_width, y : y + block_height]
+            print(str(x), str(y))
+            #block_array = np.append(block_array, new_block_array)
+            block_array[x, y] = new_block_array
+    
+    #block_array = np.reshape(block_array, (width, height, block_width, block_height))
+    return block_array, block_width, block_height
+
+def dct_coefficents(orginal_image, width, height):
+    block_array = get_blocks(orginal_image, width, height)
+    
+    dct_image = np.np.empty((width, height, block_width, block_width))
+    # apply dct to each block
+    for x in range(width):
+        for y in range(height):
+                new_dct_image = dct(dct(block_array[x][y], axis=0), axis=1)
     
     return dct_image
 
@@ -17,17 +42,18 @@ def dct_coefficents(orginal_image):
 #--------------------- Fake Image Calculations ---------------------
 #------------------------------------------------------------------------
 
-# fake moose, fake lion, real zebra, real bird
-orginal_image, image_path = load_image('fake moose')
+# fake moose, fake lion, fake lion small, real zebra, real bird
+orginal_image, image_path = load_image('fake lion small')
 
 # make greyscale image
 r, g, b = orginal_image[:,:,0], orginal_image[:,:,1], orginal_image[:,:,2]
 greyscale_image = 0.2989 * r + 0.5870 * g + 0.1140 * b
 greyscale_image = (greyscale_image / np.amax(greyscale_image)).astype(np.float64)
 
-dct_image = dct(greyscale_image)
 
 width, height = np.shape(orginal_image)[0], np.shape(orginal_image)[1]
+
+dct_image = dct_coefficents(greyscale_image, width, height)
 
 num_of_pixels = width * height
 print('Resolution = '+ str(width) + 'x' + str(height))

@@ -27,15 +27,15 @@ def convert_to_ela_image(path, quality):
     
     return ela_image
 
-
 #------------------------------------------------------------------------
 #--------------------- Fake Image Calculations ---------------------
 #------------------------------------------------------------------------
 
-# fake moose, fake lion, real zebra, real bird
+# load_image() is a function that I made and defined earlier
+# fake moose, fake lion, real zebra, real bird are downloaded images from CASIA database
 orginal_image, image_path = load_image('fake lion')
 
-# higher ela brightness means more real
+# higher ela brightness means more real?
 # same level of ela brightness throughout image means more real
 
 ela_image = np.asarray(convert_to_ela_image(image_path, 90))
@@ -45,8 +45,9 @@ width, height = np.shape(orginal_image)[0], np.shape(orginal_image)[1]
 num_of_pixels = width * height
 print('Resolution = '+ str(width) + 'x' + str(height))
 
+# calculate probabilty of being fake
 fakeness = np.sum(ela_image) / (num_of_pixels * 255)
-print('probabilty of fake = {fakeness:.2f} %'.format(fakeness=fakeness * 100)) # in percent
+print('probabilty of fake = {fakeness:.2f} %'.format(fakeness=fakeness * 100)) # in percentage
 
 # calculate histrogram
 r, g, b = ela_image[:,:,0], ela_image[:,:,1], ela_image[:,:,2]
