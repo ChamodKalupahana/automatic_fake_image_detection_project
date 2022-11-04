@@ -33,7 +33,7 @@ def convert_to_ela_image(path, quality):
 
 # load_image() is a function that I made and defined earlier
 # fake moose, fake lion, real zebra, real bird are downloaded images from CASIA database
-orginal_image, image_path = load_image('fake lion')
+orginal_image, image_path = load_image('real zebra')
 
 # higher ela brightness means more real?
 # same level of ela brightness throughout image means more real
