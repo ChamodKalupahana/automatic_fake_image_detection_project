@@ -27,13 +27,14 @@ def find_grey_hist(orginal_image):
     # zero bin counts
     # this function returns x values in the 1st array and y values in the 2nd array
     orginal_zero_bins = np.where(greyscale_image == 0)
+    edit_zero_bins = np.where(edit_greyscale_image == 0)
+    edit_zero_bins_x = np.where(edit_greyscale_image == 0)[0]
+    edit_zero_bins_y = np.where(edit_greyscale_image == 0)[1]
 
     orginal_bins = np.where(hist == 0)
     edit_bins = np.where(hist_edit == 0) # might be no black pixels
 
-
-
-    #neighboring_bins = edit_greyscale_image[edit_zero_bins[0] + 1, edit_zero_bins[1] + 1]
+    neighboring_bins = edit_greyscale_image[edit_zero_bins[0] + 1, edit_zero_bins[1] + 1]
         
     
     # need to test images to figure out what threshold should be
@@ -41,9 +42,9 @@ def find_grey_hist(orginal_image):
     # confidence value should depend on the difference between neighbouring bins
     
     neighboring_bin_threshold = 0
-    if (hist_edit[int(edit_bins + 1)] > neighboring_bin_threshold) and :
-
-    confidence_level = 
+    if (hist_edit[int(edit_bins + 1)] > neighboring_bin_threshold):
+        pass
+    confidence_level = 0.5
 
     if neighboring_bins > 0.5:
         fake = True
