@@ -63,10 +63,19 @@ def load_image(image):
     if image == 'fake lion small':
         orginal_image = plt.imread(r'test images\fake lion small.jpg')
         image_path = r'test images\fake lion small.jpg'
+    
+    if image == 'fake lion resampled':
+        orginal_image = plt.imread(r'test images\fake lion resampled.jpg')
+        image_path = r'test images\fake lion resampled.jpg'
 
     if image == 'real zebra':
         orginal_image = plt.imread(r'test images\real zebra.jpg')
         image_path = r'test images\real zebra.jpg'
+
+    if image == 'real zebra resampled':
+        orginal_image = plt.imread(r'test images\real zebra resampled.jpg')
+        image_path = r'test images\real zebra resampled.jpg'
+
 
     if image == 'real bird':
         orginal_image = plt.imread(r'test images\real bird.jpg')
