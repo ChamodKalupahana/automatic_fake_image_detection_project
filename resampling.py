@@ -17,7 +17,55 @@ def get_variance(orginal_image, width, height):
     win_sqr_mean = ndimage.uniform_filter(img**2, (win_rows, win_cols))
     win_var = win_sqr_mean - win_mean**2
     
-    return np.var(win_var)
+    fakeness = np.mean(win_var) / 250
+    return fakeness
+
+def get_variance_v2(orginal_image, width, height, test_variance):
+
+    if test_variance == True:
+        orginal_image = np.random.rand(width, height) * 255
+
+
+    image_mean = np.mean(orginal_image)
+    total_variance = np.array([])
+    """
+
+    for x in range(width):
+        for y in range(height):
+            variance = (orginal_image[x][y] - image_mean)**2
+            total_variance = np.append(total_variance, variance)
+            print("Processing pixel", str(x), str(y))
+    """
+    var_array = np.copy(orginal_image)
+    var_array = (orginal_image - image_mean)**2
+    total_var = np.sqrt(np.sum(var_array) / (width * height) - 300)
+    
+    #image_variance = np.sqrt(np.sum(total_variance / (width * height)) - 300)
+    image_variance = total_var
+    
+    # max variance is 5000?
+    # max variance should be 255 because that's the max brightness of the pixels in the fft_image
+
+    # found by 'training' the program using sample real and fake images
+    fake_threshold = 0.15
+    if image_variance > image_mean:
+        fakeness = 1
+    
+    # extravagate small differences
+    if image_variance <= image_mean:
+        fakeness = (image_variance / image_mean) * 3
+
+    if image_variance < (image_mean * fake_threshold):
+        #fakeness = 0
+        fakeness = image_variance / image_mean
+    
+    return fakeness
+
+def get_max(orginal_image, width, height, test_variance):
+
+    fakeness = np.max(orginal_image) / np.sum(orginal_image)
+    
+    return fakeness * 10000
 
 def fft_coefficents(orginal_image, enchance, high_pass_filter):
     #block_array = get_blocks(orginal_image, width, height)
@@ -42,14 +90,13 @@ def fft_coefficents(orginal_image, enchance, high_pass_filter):
 #--------------------- Fake Image Calculations ---------------------
 #------------------------------------------------------------------------
 
-# fake moose, fake lion, fake lion small, fake lion resampled, real zebra, real bird
-orginal_image, image_path = load_image('goosefair')
+# fake moose, fake lion, fake lion small, fake lion resampled, real zebra, real zebra resampled, real zebra small, real bird
+orginal_image, image_path = load_image('real zebra small')
 
 # make greyscale image
 r, g, b = orginal_image[:,:,0], orginal_image[:,:,1], orginal_image[:,:,2]
 greyscale_image = 0.2989 * r + 0.5870 * g + 0.1140 * b
 greyscale_image = (greyscale_image / np.amax(greyscale_image)).astype(np.float64)
-
 
 width, height = np.shape(orginal_image)[0], np.shape(orginal_image)[1]
 
@@ -58,7 +105,8 @@ fft_image = fft_coefficents(greyscale_image, enchance=True, high_pass_filter=Fal
 num_of_pixels = width * height
 print('Resolution = '+ str(width) + 'x' + str(height))
 
-fakeness = get_variance(fft_image, width, height)
+fakeness = get_variance_v2(fft_image, width, height, test_variance=False)
+#fakeness = get_max(fft_image, width, height, test_variance=False)
 
 print('probabilty of fake = {fakeness:.2f} %'.format(fakeness=fakeness * 100)) # in percentage
 

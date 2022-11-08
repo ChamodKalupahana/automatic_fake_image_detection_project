@@ -76,6 +76,9 @@ def load_image(image):
         orginal_image = plt.imread(r'test images\real zebra resampled.jpg')
         image_path = r'test images\real zebra resampled.jpg'
 
+    if image == 'real zebra small':
+        orginal_image = plt.imread(r'test images\real zebra small.jpg')
+        image_path = r'test images\real zebra small.jpg'
 
     if image == 'real bird':
         orginal_image = plt.imread(r'test images\real bird.jpg')
