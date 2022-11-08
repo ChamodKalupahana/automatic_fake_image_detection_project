@@ -49,9 +49,9 @@ def detect_resampling(suspect_image ,show_images, debugging, fake_threshold):
         if image_variance <= image_mean:
             fakeness = (image_variance / image_mean) * 3
 
-            #if image_variance < (image_mean * fake_threshold):
+            if image_variance < (image_mean * fake_threshold):
                 #fakeness = 0
-            #    fakeness = image_variance / image_mean
+                fakeness = image_variance / image_mean
         
         return fakeness
 
@@ -123,10 +123,10 @@ def detect_resampling(suspect_image ,show_images, debugging, fake_threshold):
         plt.show()
 
     if fakeness >= 0.5:
-        fakeness_end_result = True
+        fakeness_end_result = True # image is fake
 
     if fakeness <= 0.5:
-        fakeness_end_result = False
+        fakeness_end_result = False # image is real
     
     return fakeness_end_result
 
