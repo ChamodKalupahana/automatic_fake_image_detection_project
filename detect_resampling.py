@@ -4,31 +4,37 @@ import time
 
 from resampling import detect_resampling
 import glob
-from sklearn.datasets import make_classification
-from sklearn.metrics import confusion_matrix, ConfusionMatrixDisplay
-from sklearn.model_selection import train_test_split
-from sklearn.svm import SVC
 
+# for truth table
+from sklearn.metrics import confusion_matrix, ConfusionMatrixDisplay
 
 start_time = time.time()
-
 
 def fake_image_detection(show_point_plot, show_scatter, fake_threshold, show_truth_table):
     # how many images to process
     casia_folder_path = r"C:\Users\chamo\Documents\Physics\Projects\Imaging and Data Processing\Automatic Fake Image Detection"
 
     num_of_images = 300
-    casia_2_real = glob.glob(casia_folder_path+'\CASIA2\Au\Au*')
-    casia_2_fake = glob.glob(casia_folder_path+'\CASIA2\Tp\Tp*')
+    casia_2_real = glob.glob(casia_folder_path+'\CASIA2\Au\Au*')[0:int(np.round(num_of_images/2))]
+    casia_2_fake = glob.glob(casia_folder_path+'\CASIA2\Tp\Tp*')[0:int(np.round(num_of_images/2))]
+    casia_2_real_crop = glob.glob(casia_folder_path+'\CASIA2_RandomCrop\Au\Au*')[0:int(np.round(num_of_images/2))]
+    # add in 2000 redited images?
+    
     casia_2 = np.append(casia_2_real, casia_2_fake)
+    casia_2 = np.append(casia_2_real, casia_2_real_crop)
 
     total_results = np.array([])
     fake_image_labels = np.array([])
     fakeness_end_result_total = np.array([])
 
+    good_images = np.array([])
+    bad_images = np.array([])
     for i in range(num_of_images):
         # get a radnom real or fake image
-        random_i = np.random.randint(0, np.size(casia_2))
+        #random_i = np.random.randint(0, np.size(casia_2))
+        
+        # go through all images 1 by 1
+        random_i = i
         temp_image = casia_2[random_i]
 
         # fake_threshold of 0.15 was too low to detect real images (accuracy = 40% for just real images)
@@ -42,6 +48,11 @@ def fake_image_detection(show_point_plot, show_scatter, fake_threshold, show_tru
             fake_image_labels = np.append(fake_image_labels, fake_image)
             print('Image', str(i + 1),'is Real')
 
+        if '\CASIA2_RandomCrop\Au\Au' in str(temp_image):
+            fake_image = True
+            fake_image_labels = np.append(fake_image_labels, fake_image)
+            print('Image', str(i + 1),'is Cropped')
+
         if '\CASIA2\Tp\Tp' in str(temp_image):
             fake_image = True
             fake_image_labels = np.append(fake_image_labels, fake_image)
@@ -49,9 +60,11 @@ def fake_image_detection(show_point_plot, show_scatter, fake_threshold, show_tru
 
         if fakeness_end_result == fake_image:
             total_results = np.append(total_results, 1)
+            good_images = np.append(good_images, str(temp_image))
         
         if fakeness_end_result != fake_image:
             total_results = np.append(total_results, 0)
+            bad_images = np.append(bad_images, str(temp_image))
         
         fakeness_end_result_total = np.append(fakeness_end_result_total, fakeness_end_result)
 
@@ -79,37 +92,51 @@ def fake_image_detection(show_point_plot, show_scatter, fake_threshold, show_tru
         plt.savefig(r'figures\bar chart.jpeg')
     
     if show_truth_table == True:
-        #labels = np.array(['RF', 'FF', 'RR', 'FR'])
-        labels = [['Real', 'Fake']]
-        labels = [0, 1]
-        
-        #truth = confusion_matrix(total_results, fake_image_labels)
-        #truth_table = ConfusionMatrixDisplay(confusion_matrix=truth)
+        print('Correct Answers: ' + str(np.size(np.where(fakeness_end_result_total == fake_image_labels))))
 
-        print(np.size(np.where(fakeness_end_result_total == fake_image_labels)))
+        #labels = np.array(['RF', 'FF', 'RR', 'FR'])
+        labels = [['Real', 'Fake']] # figure out how to fix labels
+        labels = [0, 1]
 
         # detect_resampling returns 1 if fake
         # fake_image_labels returns 1 if fake
-        truth = confusion_matrix(fake_image_labels, fakeness_end_result_total, labels=labels)
+
+        truth = confusion_matrix(fake_image_labels, fakeness_end_result_total , labels=labels, normalize='true')
         truth_table = ConfusionMatrixDisplay(confusion_matrix=truth, display_labels=labels)
         
         #truth_table.set_ylabel('Program output')
         #truth_table.set_xlabel('Image')
+
         truth_table.plot()
         plt.savefig(r'figures\truth table.jpeg')
 
 
     # calculate accuracy of system
     accuracy = np.sum(total_results) / np.size(total_results)
+    percentage = np.sum(fake_image_labels) / num_of_images
+    print('Percentage of fake images = {percentage:.2f}%'.format(percentage=percentage * 100))
     print('Fake Image Detection Accuracy = {accuracy:.2f}%'.format(accuracy=accuracy * 100)) # in percent
 
     plt.show()
     
+    #plt.imshow(plt.imread(good_images[0])) for debugging
+
+    # orginal theory was that the program can't detect if the image wasn't resized by a significant factor
+    # but bad_images contains images which have been cropped in significantly
     return
 
 # with threshold 0.1, the results are very 'pure'
 # most/half of fake images that the program detects is correct but it misses 75% of fake images in sample
-fake_image_detection(show_point_plot=False, show_scatter=True, fake_threshold=0.2, show_truth_table=True)
+
+# confidence = 0.5, fake_threshold = 0.1, variance_mutiplier = 3 works - accurary = 55% on average (pure sample)
+# confidence = 0.5, fake_threshold = 0.1, variance_mutiplier = 3.5 works - accurary = 55.6% on average
+# confidence = 0.4, fake_threshold = 0.01, variance_mutiplier = 2 doesn't work - accuracy = 48.7%
+
+# we want a pure sample, not so worried about completeness
+# some
+
+fake_image_detection(show_point_plot=True, show_scatter=True, fake_threshold=0.1, show_truth_table=True)
+
 #detect_resampling(suspect_image=casia_2_fake[10], show_images=True, debugging=False)
 
 # measure time taken to execute code (uni interpreter is usually faster than uni_2_1)
@@ -117,4 +144,4 @@ end_time = time.time()
 time_taken = end_time - start_time
 print('Time taken =', str(time_taken) + 'secs')
 
-# resolution of all images = 256x384
+# resolution of all images = 256x384 (most images are this size)

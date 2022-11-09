@@ -47,11 +47,12 @@ def detect_resampling(suspect_image ,show_images, debugging, fake_threshold):
         
         # extravagate small differences
         if image_variance <= image_mean:
-            fakeness = (image_variance / image_mean) * 3
+            #fakeness = (image_variance / image_mean) * 3
+            fakeness = (image_variance / image_mean) * 3.5
 
-            if image_variance < (image_mean * fake_threshold):
-                #fakeness = 0
-                fakeness = image_variance / image_mean
+        if image_variance < (image_mean * fake_threshold):
+            #fakeness = 0
+            fakeness = image_variance / image_mean
         
         return fakeness
 
@@ -77,12 +78,12 @@ def detect_resampling(suspect_image ,show_images, debugging, fake_threshold):
     #------------------------------------------------------------------------
     #--------------------- Fake Image Calculations ---------------------
     #------------------------------------------------------------------------
-
-    orginal_image= plt.imread(suspect_image)
+    if debugging == False:
+        orginal_image= plt.imread(suspect_image)
 
     # fake moose, fake lion, fake lion small, fake lion resampled, real zebra, real zebra resampled, real zebra small, real bird    
     if debugging == True:
-        orginal_image, image_path = load_image('real zebra small')
+        orginal_image, image_path = load_image(suspect_image)
 
     # make greyscale image
     r, g, b = orginal_image[:,:,0], orginal_image[:,:,1], orginal_image[:,:,2]
@@ -122,13 +123,17 @@ def detect_resampling(suspect_image ,show_images, debugging, fake_threshold):
         fig.savefig(r'figures\test image resampling.jpeg')
         plt.show()
 
-    if fakeness >= 0.5:
+    #confidence = 0.25
+    confidence = 0.5
+    if fakeness > confidence:
         fakeness_end_result = True # image is fake
 
-    if fakeness <= 0.5:
+    if fakeness <= confidence:
         fakeness_end_result = False # image is real
     
     return fakeness_end_result
+
+#detect_resampling(suspect_image='fake moose', show_images=True, debugging=True, fake_threshold=0.2)
 
 # measure time taken to execute code (uni interpreter is usually faster than uni_2_1)
 end_time = time.time()
