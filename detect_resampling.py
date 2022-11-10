@@ -10,18 +10,23 @@ from sklearn.metrics import confusion_matrix, ConfusionMatrixDisplay
 
 start_time = time.time()
 
-def fake_image_detection(show_point_plot, show_scatter, fake_threshold, show_truth_table):
+def fake_image_detection(show_point_plot, show_scatter, fake_threshold, show_truth_table, produce_half_sample):
     # how many images to process
     casia_folder_path = r"C:\Users\chamo\Documents\Physics\Projects\Imaging and Data Processing\Automatic Fake Image Detection"
 
+
     num_of_images = 300
-    casia_2_real = glob.glob(casia_folder_path+'\CASIA2\Au\Au*')[0:int(np.round(num_of_images/2))]
-    casia_2_fake = glob.glob(casia_folder_path+'\CASIA2\Tp\Tp*')[0:int(np.round(num_of_images/2))]
-    casia_2_real_crop = glob.glob(casia_folder_path+'\CASIA2_RandomCrop\Au\Au*')[0:int(np.round(num_of_images/2))]
+    casia_2_real = glob.glob(casia_folder_path+'\CASIA2\Au\Au*')
+    casia_2_fake = glob.glob(casia_folder_path+'\CASIA2\Tp\Tp*')
+    casia_2_real_crop = glob.glob(casia_folder_path+'\CASIA2_RandomCrop\Au\Au*')
     # add in 2000 redited images?
     
-    casia_2 = np.append(casia_2_real, casia_2_fake)
-    casia_2 = np.append(casia_2_real, casia_2_real_crop)
+    if produce_half_sample == True:
+        #casia_2 = np.append(casia_2_real[0:int(np.round(num_of_images/2))], casia_2_real_crop[0:int(np.round(num_of_images/2))])
+        casia_2 = np.append(casia_2_real[0:int(np.round(num_of_images/2))], casia_2_fake[0:int(np.round(num_of_images/2))])
+
+    if produce_half_sample == False:
+        casia_2 = np.append(casia_2_real, casia_2_real_crop)
 
     total_results = np.array([])
     fake_image_labels = np.array([])
@@ -29,12 +34,16 @@ def fake_image_detection(show_point_plot, show_scatter, fake_threshold, show_tru
 
     good_images = np.array([])
     bad_images = np.array([])
+
     for i in range(num_of_images):
-        # get a radnom real or fake image
-        #random_i = np.random.randint(0, np.size(casia_2))
-        
         # go through all images 1 by 1
-        random_i = i
+        if produce_half_sample == True:
+            random_i = i
+        
+        # get a random real or fake image
+        if produce_half_sample == False:
+            random_i = np.random.randint(0, np.size(casia_2))
+
         temp_image = casia_2[random_i]
 
         # fake_threshold of 0.15 was too low to detect real images (accuracy = 40% for just real images)
@@ -100,7 +109,7 @@ def fake_image_detection(show_point_plot, show_scatter, fake_threshold, show_tru
 
         # detect_resampling returns 1 if fake
         # fake_image_labels returns 1 if fake
-
+        # normalize='true'
         truth = confusion_matrix(fake_image_labels, fakeness_end_result_total , labels=labels, normalize='true')
         truth_table = ConfusionMatrixDisplay(confusion_matrix=truth, display_labels=labels)
         
@@ -128,20 +137,33 @@ def fake_image_detection(show_point_plot, show_scatter, fake_threshold, show_tru
 # with threshold 0.1, the results are very 'pure'
 # most/half of fake images that the program detects is correct but it misses 75% of fake images in sample
 
+# parameter testing
 # confidence = 0.5, fake_threshold = 0.1, variance_mutiplier = 3 works - accurary = 55% on average (pure sample)
 # confidence = 0.5, fake_threshold = 0.1, variance_mutiplier = 3.5 works - accurary = 55.6% on average
 # confidence = 0.4, fake_threshold = 0.01, variance_mutiplier = 2 doesn't work - accuracy = 48.7%
 
-# we want a pure sample, not so worried about completeness
-# some
+# confidence = 0.5, fake_threshold = 0.1, variance_mutiplier = 3.5, const_variance = -300 works - accurary = 48% on average
+# confidence = 0.5, fake_threshold = 0.2, variance_mutiplier = 3.5, const_variance = -500 works - accurary = 59.6% on average
+# confidence = 0.5, fake_threshold = 0.2, variance_mutiplier = 4, const_variance = -450 works - accurary = 59.6% on average
+# confidence = 0.5, fake_threshold = 0.175, variance_mutiplier = 3.5, const_variance = -450 works - accurary = 59.6% on average
+# confidence = 0.5, fake_threshold = 0.2, variance_mutiplier = 3.5, const_variance = -475 works - accurary = 64% on average
+# confidence = 0.5, fake_threshold = 0.2, variance_mutiplier = 3.5, const_variance = -485 works - accurary = 65% on average
+# confidence = 0.5, fake_threshold = 0.2, variance_mutiplier = 3.5, const_variance = -490 works - accurary = 65.7% on average
+# confidence = 0.5, fake_threshold = 0.2, variance_mutiplier = 3.5, const_variance = -495 works - accurary = 66.3% on average
+# confidence = 0.5, fake_threshold = 0.2, variance_mutiplier = 3.5, const_variance = -500 works - accurary = 66.3% on average
 
-fake_image_detection(show_point_plot=True, show_scatter=True, fake_threshold=0.1, show_truth_table=True)
+# const_variance = -495 is the global maximum
+# variance_mutiplier = 3.5 is the global maximum
+# fake_threshold = 0.2 is the global maximum
+# confidence = 0.5 is the global maximum
+
+fake_image_detection(show_point_plot=False, show_scatter=False, fake_threshold=0.2, show_truth_table=False, produce_half_sample=True)
 
 #detect_resampling(suspect_image=casia_2_fake[10], show_images=True, debugging=False)
 
 # measure time taken to execute code (uni interpreter is usually faster than uni_2_1)
 end_time = time.time()
 time_taken = end_time - start_time
-print('Time taken =', str(time_taken) + 'secs')
+print('Time taken = {time_taken:.2f} secs'.format(time_taken=time_taken))
 
 # resolution of all images = 256x384 (most images are this size)

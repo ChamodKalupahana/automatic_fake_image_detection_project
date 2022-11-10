@@ -7,7 +7,8 @@ from loading_data import load_image
 
 from scipy import ndimage 
 
-start_time = time.time()
+#start_time = time.time()
+
 def detect_resampling(suspect_image ,show_images, debugging, fake_threshold):
 
     def get_variance_v2(orginal_image, width, height, test_variance, fake_threshold):
@@ -31,7 +32,7 @@ def detect_resampling(suspect_image ,show_images, debugging, fake_threshold):
         
         # need magnitude of variance because it can be -ve for some edge case images (don't know why)
         # happened with CASIA2\Tp\Tp_D_CNN_M_B_nat10139_nat00059_11949.jpg
-        total_var = np.sqrt(np.abs(np.sum(var_array) / (width * height) - 300)) 
+        total_var = np.sqrt(np.abs(np.sum(var_array) / (width * height) - 495)) 
         
         #image_variance = np.sqrt(np.sum(total_variance / (width * height)) - 300)
         image_variance = total_var
@@ -123,7 +124,6 @@ def detect_resampling(suspect_image ,show_images, debugging, fake_threshold):
         fig.savefig(r'figures\test image resampling.jpeg')
         plt.show()
 
-    #confidence = 0.25
     confidence = 0.5
     if fakeness > confidence:
         fakeness_end_result = True # image is fake
@@ -133,9 +133,10 @@ def detect_resampling(suspect_image ,show_images, debugging, fake_threshold):
     
     return fakeness_end_result
 
-#detect_resampling(suspect_image='fake moose', show_images=True, debugging=True, fake_threshold=0.2)
+#detect_resampling(suspect_image='real zebra', show_images=True, debugging=True, fake_threshold=0.2)
 
 # measure time taken to execute code (uni interpreter is usually faster than uni_2_1)
-end_time = time.time()
-time_taken = end_time - start_time
+
+#end_time = time.time()
+#time_taken = end_time - start_time
 #print('Time taken =', str(time_taken) + 'secs')
