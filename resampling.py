@@ -9,7 +9,7 @@ from scipy import ndimage
 
 #start_time = time.time()
 
-def detect_resampling(suspect_image ,show_images, debugging, fake_threshold):
+def detect_resampling(suspect_image ,show_images, fake_threshold):
 
     def get_variance_v2(orginal_image, width, height, test_variance, fake_threshold):
 
@@ -83,12 +83,16 @@ def detect_resampling(suspect_image ,show_images, debugging, fake_threshold):
     #------------------------------------------------------------------------
     #--------------------- Fake Image Calculations ---------------------
     #------------------------------------------------------------------------
-    if debugging == False:
-        orginal_image= plt.imread(suspect_image)
 
-    # fake moose, fake lion, fake lion small, fake lion resampled, real zebra, real zebra resampled, real zebra small, real bird    
-    if debugging == True:
-        orginal_image, image_path = load_image(suspect_image)
+    orginal_image = plt.imread(r'test images\pliot selfie 2.jpg')
+    image_path = r'test images\pliot selfie 2.jpg'
+
+
+    orginal_image= plt.imread(suspect_image)
+
+    # for testing
+    # orginal_image= plt.imread(orginal_image)
+
 
     # make greyscale image
     r, g, b = orginal_image[:,:,0], orginal_image[:,:,1], orginal_image[:,:,2]
@@ -149,7 +153,7 @@ def detect_resampling(suspect_image ,show_images, debugging, fake_threshold):
     return fakeness_end_result
 
 # resampling example real
-#detect_resampling(suspect_image='dalle 2 real', show_images=True, debugging=True, fake_threshold=0.2)
+#detect_resampling(suspect_image='dalle 2 real', show_images=True, fake_threshold=0.2)
 
 # measure time taken to execute code (uni interpreter is usually faster than uni_2_1)
 

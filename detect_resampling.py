@@ -10,16 +10,28 @@ from sklearn.metrics import confusion_matrix, ConfusionMatrixDisplay
 
 start_time = time.time()
 
-def fake_image_detection(show_point_plot, show_bar_chart, fake_threshold, show_truth_table, produce_half_sample, num_of_images):
-    # how many images to process
-    casia_folder_path = r"C:\Users\chamo\Documents\Physics\Projects\Imaging and Data Processing\Automatic Fake Image Detection"
-    defacto_folder_path = r"C:\Users\chamo\Documents\Physics\Projects\Imaging and Data Processing\Automatic Fake Image Detection\copymove_img\img"
+def fake_image_detection(show_point_plot, show_bar_chart, fake_threshold, show_truth_table, produce_half_sample, num_of_images, casia_folder_path, defacto_folder_path):
+    """ Calculates the probabilty of each image in the CASIA v2 real vs cropped database
+    Args:
+        show_point_plot (Boolan): True or False to show which images where correct or wrong
+        show_bar_chart (Boolan): True or False to show bar chart of how many images were correct or wrong
+        fake_threshold (_type_): _description_
+        show_truth_table (Boolan): True or False to show where images lie on truth table
+        produce_half_sample (Boolan): True or False to tell program to get a random or equal sample of real or fake images
+        num_of_images (int): Number of images per iteration
+        casia_folder_path (str): Absolute path to CASIA folder path
+        defacto_folder_path (str): Absolute path to defacto folder path
+
+    Returns:
+        _type_: _description_
+    """
 
     # max num. of images for real + crop is 14982
     # max num. of images for real + fake is 11429
     # max num. of images for real + copy-move is 13749
     # use 300 images for testing
 
+    # how many images to process
     #num_of_images = 11429
     casia_2_real = glob.glob(casia_folder_path+'\CASIA2\Au\Au*')
     casia_2_fake = glob.glob(casia_folder_path+'\CASIA2\Tp\Tp*')
@@ -44,7 +56,7 @@ def fake_image_detection(show_point_plot, show_bar_chart, fake_threshold, show_t
     good_images = np.array([])
     bad_images = np.array([])
 
-    for i in range(num_of_images - 1):
+    for i in range(num_of_images):
         # go through all images 1 by 1
         if produce_half_sample == True:
             random_i = i
@@ -59,7 +71,7 @@ def fake_image_detection(show_point_plot, show_bar_chart, fake_threshold, show_t
         # fake_threshold of 0.2 was too high to detect fake images (accuracy = 30% for just fake images)
         # make a plot of different thresholds and accurary of program
 
-        fakeness_end_result = detect_resampling(suspect_image=temp_image, show_images=False, debugging=False, fake_threshold=fake_threshold)
+        fakeness_end_result = detect_resampling(suspect_image=temp_image, show_images=False, fake_threshold=fake_threshold)
 
         if '\CASIA2\Au\Au' in str(temp_image):
             fake_image = False
@@ -190,12 +202,14 @@ def fake_image_detection(show_point_plot, show_bar_chart, fake_threshold, show_t
 # fake_threshold = 0.2 is the global maximum
 # confidence = 0.5 is the global maximum
 
-#fake_image_detection(show_point_plot=False, show_bar_chart=True, fake_threshold=0.2, show_truth_table=True, produce_half_sample=False,
-#num_of_images=13749)
 
 # for a single image anaylsis
 #detect_resampling(suspect_image=casia_2_fake[10], show_images=True, debugging=False)
 #detect_resampling(suspect_image=defacto[10], show_images=True, debugging=False)
+
+# for a mutiple image anaylsis
+#fake_image_detection(show_point_plot=False, show_bar_chart=True, fake_threshold=0.2, show_truth_table=True, produce_half_sample=False,
+#num_of_images=13749)
 
 # measure time taken to execute code (uni interpreter is usually faster than uni_2_1)
 end_time = time.time()
