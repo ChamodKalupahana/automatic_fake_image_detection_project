@@ -83,4 +83,28 @@ def load_image(image):
     if image == 'real bird':
         orginal_image = plt.imread(r'test images\real bird.jpg')
         image_path = r'test images\real bird.jpg'
+
+    if image == 'resampling example real':
+        orginal_image = plt.imread(r'test images\Au_ani_00005.jpg')
+        image_path = r'test images\Au_ani_00005.jpg'
+
+    if image == 'resampling example resized':
+        orginal_image = plt.imread(r'test images\Au__ani_00005_recrop.jpg')
+        image_path = r'test images\Au__ani_00005_recrop.jpg'
+
+    if image == 'dalle 2 real':
+        orginal_image = plt.imread(r'test images\dalle 2 real image.jpg')
+        image_path = r'test images\dalle 2 real image.jpg'
+
+    if image == 'dalle 2 fake':
+        orginal_image = plt.imread(r'test images\dalle 2 fake image.jpg')
+        image_path = r'test images\dalle 2 fake image.jpg'
+
+    if image == 'pliot selfie':
+        orginal_image = plt.imread(r'test images\pliot selfie.jpg')
+        image_path = r'test images\pliot selfie.jpg'
+
+    if image == 'pliot selfie 2':
+        orginal_image = plt.imread(r'test images\pliot selfie 2.jpg')
+        image_path = r'test images\pliot selfie 2.jpg'
     return orginal_image, image_path

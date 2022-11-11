@@ -43,7 +43,7 @@ def detect_resampling(suspect_image ,show_images, debugging, fake_threshold):
         # found by 'training' the program using sample real and fake images
         # use fake_threshold from outisde this function
 
-        if image_variance > image_mean:
+        if image_variance > image_mean: # very rarely happens
             fakeness = 1
         
         # extravagate small differences
@@ -54,6 +54,9 @@ def detect_resampling(suspect_image ,show_images, debugging, fake_threshold):
         if image_variance < (image_mean * fake_threshold):
             #fakeness = 0
             fakeness = image_variance / image_mean
+
+        if fakeness > 1:
+            fakeness = 1
         
         return fakeness
 
@@ -108,7 +111,9 @@ def detect_resampling(suspect_image ,show_images, debugging, fake_threshold):
         #--------------------- Plotting Infomation ---------------------
         #------------------------------------------------------------------------
 
-        fig, ax = plt.subplots(1, 2)
+        fig, ax = plt.subplots(1, 3, gridspec_kw={'width_ratios': [5,5,1]})
+        fig.tight_layout()
+        fig.subplots_adjust(top=0.8)
 
         ax[0].imshow(orginal_image)
         ax[1].imshow(fft_image, cmap='gray')
@@ -117,9 +122,18 @@ def detect_resampling(suspect_image ,show_images, debugging, fake_threshold):
         ax[0].set_yticks([])
         ax[1].set_xticks([])
         ax[1].set_yticks([])
-
+        
+        
+        # comment out for printing into report
+        #ax[0].set_xlabel('(a)')
+        #ax[1].set_xlabel('(b)')
         ax[0].set_title('Orginal Image')
         ax[1].set_title('Fourier Transform Image')
+
+        # plot confidence meter
+        ax[2].bar('Confidence (%)',fakeness * 100)
+        ax[2].set_ylim(0, 100)
+        #ax[2].set_ylabel('%')
 
         fig.savefig(r'figures\test image resampling.jpeg')
         plt.show()
@@ -133,7 +147,8 @@ def detect_resampling(suspect_image ,show_images, debugging, fake_threshold):
     
     return fakeness_end_result
 
-#detect_resampling(suspect_image='real zebra', show_images=True, debugging=True, fake_threshold=0.2)
+# resampling example real
+#detect_resampling(suspect_image='pliot selfie 2', show_images=True, debugging=True, fake_threshold=0.2)
 
 # measure time taken to execute code (uni interpreter is usually faster than uni_2_1)
 
