@@ -29,6 +29,7 @@ def detect_resampling(suspect_image ,show_images, debugging, fake_threshold):
         """
         var_array = np.copy(orginal_image)
         var_array = (orginal_image - image_mean)**2
+
         
         # need magnitude of variance because it can be -ve for some edge case images (don't know why)
         # happened with CASIA2\Tp\Tp_D_CNN_M_B_nat10139_nat00059_11949.jpg
@@ -148,7 +149,7 @@ def detect_resampling(suspect_image ,show_images, debugging, fake_threshold):
     return fakeness_end_result
 
 # resampling example real
-#detect_resampling(suspect_image='pliot selfie 2', show_images=True, debugging=True, fake_threshold=0.2)
+#detect_resampling(suspect_image='dalle 2 real', show_images=True, debugging=True, fake_threshold=0.2)
 
 # measure time taken to execute code (uni interpreter is usually faster than uni_2_1)
 
